@@ -1,0 +1,61 @@
+version: '3.8'
+
+services:
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    restart: always
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./hadoop.env
+    networks:
+      - bigdata-net
+
+  datanode:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode
+    restart: always
+    volumes:
+      - datanode:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./hadoop.env
+    networks:
+      - bigdata-net
+
+  spark:
+    image: bde2020/spark-master:latest
+    container_name: spark-master
+    environment:
+      - INIT_DAEMON_STEP=setup_spark
+    ports:
+      - "8080:8080"  # Spark UI
+      - "7077:7077"  # Spark cluster port
+    networks:
+      - bigdata-net
+
+  spark-worker:
+    image: bde2020/spark-worker:latest
+    environment:
+      - SPARK_MASTER=spark://spark-master:7077
+    depends_on:
+      - spark
+    ports:
+      - "8081:8081"
+    networks:
+      - bigdata-net
+
+volumes:
+  namenode:
+  datanode:
+
+networks:
+  bigdata-net:
+    driver: bridge
