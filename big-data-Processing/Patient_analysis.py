@@ -4,10 +4,10 @@ from pyspark.sql import SparkSession
 spark = SparkSession.builder.appName("ClickstreamAnalysis").getOrCreate()
 
 # Load data from HDFS
-df = spark.read.csv("hdfs://namenode:9000/user/data/clickstream.csv", header=True, inferSchema=True)
+df = spark.read.csv("hdfs://namenode:9000/user/data/Patient.csv", header=True, inferSchema=True)
 
 # Data Transformation
-action_counts = df.groupBy("action").count()
+action_counts = df.groupBy("smoking_history").count()
 
 # Show Results
 action_counts.show()

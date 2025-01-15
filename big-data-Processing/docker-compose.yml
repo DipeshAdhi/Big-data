@@ -36,7 +36,7 @@ services:
     environment:
       - INIT_DAEMON_STEP=setup_spark
     ports:
-      - "8080:8080"  # Spark UI
+      - "8082:8082"  # Spark UI
       - "7077:7077"  # Spark cluster port
     networks:
       - bigdata-net
